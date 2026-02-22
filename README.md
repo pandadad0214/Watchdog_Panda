@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/watchdog_logo.jpg" width="200" />
+  <img src="Assets/Watchdog_Logo.jpg" width="200" />
 </p>
 
 <h1 align="center">🛡️ Watchdog Panda</h1>
