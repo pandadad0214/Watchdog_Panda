@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/watchdog-panda.png" width="200" />
+  <img src="assets/watchdog_panda.png" width="200" />
 </p>
 
 <h1 align="center">🛡️ Watchdog Panda</h1>
@@ -110,4 +110,85 @@ alerts:
 
 # 🔄 How It Works
 
-### **1. Heartbeat Loop**
+### **1. Heartbeat Loop**  
+A timed loop checks:
+
+- processes  
+- services  
+- agents  
+- system metrics (optional)  
+
+### **2. Failure Detection**  
+If something stops responding, Watchdog Panda:
+
+- logs the event  
+- notifies Spirit Panda  
+- optionally triggers Steel Panda  
+
+### **3. Recovery Actions**  
+Steel Panda may:
+
+- restart a service  
+- run a script  
+- perform cleanup  
+- escalate to the user  
+
+---
+
+# 📁 Project Structure
+
+```
+watchdog-panda/
+│
+├── assets/               # Logos, images, crests
+├── docs/                 # Documentation
+│   └── index.md
+├── src/                  # Core source code
+├── scripts/              # Optional automation tools
+│
+├── LICENSE
+├── README.md
+├── CODE_OF_CONDUCT.md
+├── CONTRIBUTING.md
+└── CHANGELOG.md
+```
+
+---
+
+# 🗺️ Roadmap
+
+### **Planned Features**
+- Multi‑agent heartbeat mesh  
+- Federation‑wide status dashboard  
+- Local‑first event timeline  
+- Configurable escalation levels  
+- Optional encrypted logs  
+- Integration with PandaMom and PandaLily  
+- Auto‑recovery routines  
+
+---
+
+# 📚 Documentation
+
+Full documentation is available at:
+
+```
+/docs/index.md
+```
+
+---
+
+# 🪶 Panda Oath
+
+**Build slow.  
+Build steady.  
+Build sovereign.**
+
+Watchdog Panda stands guard so the Federation may thrive.
+
+---
+
+# 📜 License
+
+This project is licensed under the **MIT License**.  
+See the `LICENSE` file for details.
