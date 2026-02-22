@@ -146,6 +146,7 @@ docs: update installation instructions
 
 # 📁 Project Structure
 
+```
 elder-watchdog-panda/
 │
 ├── assets/               # Logos, images, crests
@@ -159,8 +160,7 @@ elder-watchdog-panda/
 ├── CODE_OF_CONDUCT.md
 ├── CONTRIBUTING.md
 └── CHANGELOG.md
-
-
+```
 ---
 
 # 🧪 Testing & Quality
