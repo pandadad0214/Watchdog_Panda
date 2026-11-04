@@ -1,0 +1,22 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: shellcheck -S error -s bash Watchdog.sh install.sh
+      - name: Install script smoke test (local tarball)
+        run: |
+          git ls-files -z -- . ':!.github' | tar czf /tmp/pkg.tar.gz --null -T -
+          PANDA_TARBALL=/tmp/pkg.tar.gz INSTALL_DIR=/tmp/inst NO_RUN=1 bash install.sh
+          ls -la /tmp/inst
+          cd /tmp/inst && (TARGET_PROCESS=definitely-not-running START_COMMAND="echo restarted" CHECK_INTERVAL=1 timeout 3 bash Watchdog.sh || true) && grep -q "Restart command executed" watchdog.log && cat watchdog.log

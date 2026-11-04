@@ -12,6 +12,41 @@
   <img src="https://img.shields.io/github/last-commit/pandadad0214/watchdog_panda?style=flat&color=6a00ff" />
 </p>
 
+<p align="center"><b>A tiny watchdog script: if a process stops, Watchdog Panda restarts it and logs what happened. Linux, macOS and Termux.</b></p>
+
+<p align="center">
+  <a href="https://github.com/pandadad0214/Watchdog_Panda/releases/latest"><img src="https://img.shields.io/github/v/release/pandadad0214/Watchdog_Panda?label=latest%20release" /></a>
+  <a href="https://github.com/pandadad0214/Watchdog_Panda/actions/workflows/ci.yml"><img src="https://github.com/pandadad0214/Watchdog_Panda/actions/workflows/ci.yml/badge.svg" /></a>
+</p>
+
+<p align="center"><b><a href="https://github.com/pandadad0214/Watchdog_Panda/releases/latest">⬇ Download the latest Release</a></b></p>
+
+---
+
+# 🚀 Install / Use
+
+One command (installs into `~/watchdog-panda`):
+
+```bash
+curl -fsSL https://github.com/pandadad0214/Watchdog_Panda/releases/latest/download/install.sh | bash
+```
+
+Then tell it what to watch and how to restart it:
+
+```bash
+cd ~/watchdog-panda
+TARGET_PROCESS="my-app" START_COMMAND="nohup ./my-app.sh &" bash Watchdog.sh
+```
+
+| Setting | Default | Meaning |
+|---|---|---|
+| `TARGET_PROCESS` | `spirit-panda` | Text to match in the running process list (`pgrep -f`) |
+| `START_COMMAND` | `./start.sh` | Command that restarts it (end with `&` so the watchdog keeps watching) |
+| `CHECK_INTERVAL` | `5` | Seconds between checks |
+| `LOG_FILE` | `watchdog.log` | Where events are written |
+
+Stop it with Ctrl+C. Prefer a manual download? Grab `watchdog-panda.tar.gz` from the [latest Release](https://github.com/pandadad0214/Watchdog_Panda/releases/latest) and check it against `SHA256SUMS.txt`.
+
 ---
 
 # 🧭 Overview
@@ -59,55 +94,6 @@ Watchdog Panda is the **first line of defense**, ensuring:
 
 ---
 
-# 🚀 Installation
-
-Clone the repository:
-
-```
-git clone https://github.com/pandadad0214/watchdog-panda.git
-cd watchdog-panda
-```
-
-Install dependencies (adjust based on your implementation):
-
-```
-pip install -r requirements.txt
-```
-
-or:
-
-```
-npm install
-```
-
----
-
-# 🧠 Configuration
-
-Watchdog Panda uses a simple configuration file:
-
-```
-config/
-└── watchdog.yaml
-```
-
-Example:
-
-```
-heartbeat_interval: 5s
-services:
-  - name: spirit-panda
-    type: process
-  - name: steel-panda
-    type: process
-alerts:
-  on_failure: true
-  notify_spirit: true
-  trigger_steel: true
-```
-
----
-
 # 🔄 How It Works
 
 ### **1. Heartbeat Loop**  
@@ -135,29 +121,28 @@ Steel Panda may:
 
 ---
 
-# 📁 Project Structure
+# 🛠 For developers
 
 ```
-watchdog-panda/
-│
-├── assets/               # Logos, images, crests
-├── docs/                 # Documentation
-│   └── index.md
-├── src/                  # Core source code
-├── scripts/              # Optional automation tools
-│
-├── LICENSE
-├── README.md
-├── CODE_OF_CONDUCT.md
-├── CONTRIBUTING.md
-└── CHANGELOG.md
+Watchdog_Panda/
+├── Watchdog.sh        # the watchdog loop
+├── install.sh         # one-command installer used by the Release
+├── Assets/            # logo
+├── Index.md           # documentation
+├── Documents/
+├── CHANGELOG / LICENSE / CONTRIBUTING / CODE_OF_CONDUCT
 ```
+
+Run from a clone: `git clone https://github.com/pandadad0214/Watchdog_Panda.git && cd Watchdog_Panda && bash Watchdog.sh`
+
+Releases are automatic: add a line to `Changelog.md`, then push a `vX.Y.Z` tag. `.github/workflows/release.yml` packages `watchdog-panda.tar.gz`, `install.sh` and `SHA256SUMS.txt` and publishes the GitHub Release.
 
 ---
 
 # 🗺️ Roadmap
 
 ### **Planned Features**
+- A `config/watchdog.yaml` file for watching several services at once  
 - Multi‑agent heartbeat mesh  
 - Federation‑wide status dashboard  
 - Local‑first event timeline  
@@ -170,11 +155,7 @@ watchdog-panda/
 
 # 📚 Documentation
 
-Full documentation is available at:
-
-```
-/docs/index.md
-```
+Full documentation: [`Index.md`](Index.md)
 
 ---
 

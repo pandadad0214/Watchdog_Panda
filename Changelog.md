@@ -5,6 +5,13 @@ Dates use YYYY-MM-DD.
 
 ---
 
+## [0.1.0] — 2026-11-04
+- First GitHub Release with a one-command installer (`install.sh`); Releases now publish automatically on version tags
+- `Watchdog.sh` settings can be set with environment variables (`TARGET_PROCESS`, `START_COMMAND`, `CHECK_INTERVAL`, `LOG_FILE`)
+- README leads with Install / Use
+
+---
+
 ## [Unreleased]
 - Planned: Multi‑process monitoring
 - Planned: Telegram / messaging notifications
