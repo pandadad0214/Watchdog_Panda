@@ -13,7 +13,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - run: shellcheck -S error -s bash Watchdog.sh install.sh
+      - run: shellcheck -S error -s bash Watchdog.sh install.sh tests/smoke.sh
+      - name: Watchdog smoke tests
+        run: bash tests/smoke.sh
       - name: Install script smoke test (local tarball)
         run: |
           git ls-files -z -- . ':!.github' | tar czf /tmp/pkg.tar.gz --null -T -
