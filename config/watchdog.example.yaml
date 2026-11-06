@@ -1,0 +1,39 @@
+# Watchdog Panda config. Copy to one of these (the first match wins):
+#   the path in WATCHDOG_CONFIG
+#   ./config/watchdog.yaml
+#   ./watchdog.yaml
+#
+# This file is a small YAML subset: spaces only (no tabs), key: value pairs,
+# and a services list. # starts a comment outside quotes.
+#
+# start and on_failure are shell commands and must return. Background a
+# long-running service with nohup ... &
+#
+# on_failure runs after each restart attempt, and once more if Watchdog gives
+# up. It is optional. Steel Panda does not have to be installed; this is the
+# hook that calls it (edit the paths, then uncomment):
+#
+#   on_failure: 'TASK_DIR=/path/to/recovery-tasks bash /path/to/steel-panda/steel.sh'
+#
+# Steel Panda: https://github.com/pandadad0214/Steel_Panda
+
+check_interval: 5
+log_file: watchdog.log
+max_restarts: 5
+backoff_initial: 2
+backoff_max: 60
+cooldown: 0
+
+services:
+  - name: spirit-panda
+    type: process
+    process: spirit-panda
+    start: 'nohup ./start.sh &'
+
+  # process defaults to the service name when omitted.
+  - name: my-app
+    process: my-app
+    start: 'nohup ./my-app.sh &'
+    max_restarts: 3
+    backoff_initial: 5
+    backoff_max: 120

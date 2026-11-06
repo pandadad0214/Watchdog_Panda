@@ -13,4 +13,5 @@ else
   curl -fsSL "$URL" | tar xz -C "$INSTALL_DIR"
 fi
 echo "Watchdog Panda installed in $INSTALL_DIR"
-echo "Run it with: cd \"$INSTALL_DIR\" && TARGET_PROCESS=my-app START_COMMAND=\"nohup ./my-app.sh &\" bash Watchdog.sh"
+echo "One process:  cd \"$INSTALL_DIR\" && TARGET_PROCESS=my-app START_COMMAND='nohup ./my-app.sh &' bash Watchdog.sh"
+echo "Several:      copy \"$INSTALL_DIR/config/watchdog.example.yaml\" to watchdog.yaml, edit it, then bash \"$INSTALL_DIR/Watchdog.sh\""

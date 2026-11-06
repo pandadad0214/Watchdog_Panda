@@ -42,7 +42,7 @@ Be concise but thorough — Watchdog Panda appreciates clarity.
 - Ensure your branch is up to date with `main`.
 - Follow the commit message style below.
 - Make sure your changes are scoped and intentional.
-- Run any tests or linting tools (if applicable).
+- Run `shellcheck -S error -s bash Watchdog.sh install.sh tests/smoke.sh` and `bash tests/smoke.sh`.
 
 ### PR Requirements:
 - A clear title describing the change.
@@ -109,35 +109,33 @@ docs: update installation instructions
 # 📁 Project Structure
 
 ```
-watchdog-panda/
-│
-├── assets/               # Logos, images, crests
-├── docs/                 # Documentation
-│   └── index.md
-├── src/                  # Core source code
-├── scripts/              # Optional automation tools
-│
+Watchdog_Panda/
+├── Watchdog.sh                  # the watchdog loop
+├── install.sh                   # installer used by a tagged Release
+├── config/watchdog.example.yaml # sample multi-service config
+├── tests/smoke.sh               # bounded smoke tests
+├── Index.md                     # configuration manual
+├── Documents/Index.md
+├── Assets/                      # logo
+├── Changelog.md
 ├── LICENSE
 ├── README.md
 ├── CODE_OF_CONDUCT.md
-├── CONTRIBUTING.md
-└── CHANGELOG.md
+└── Contributing.md
 ```
 
 ---
 
 # 🧪 Testing & Quality
 
-If the project includes tests:
+Before a PR:
 
-- Ensure all tests pass before submitting a PR.
-- Add new tests for new features when appropriate.
-- Keep test names descriptive and consistent.
+```bash
+shellcheck -S error -s bash Watchdog.sh install.sh tests/smoke.sh
+bash tests/smoke.sh
+```
 
-If no tests exist yet, contributors should still:
-
-- Avoid breaking existing functionality.
-- Keep code modular and readable.
+`tests/smoke.sh` needs `pgrep` and GNU `timeout`. Add coverage there when you change the loop, the config parser, backoff, or the hook. Keep the checks bounded with `timeout` so CI cannot hang.
 
 ---
 

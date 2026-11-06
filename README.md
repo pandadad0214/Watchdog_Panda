@@ -3,7 +3,7 @@
 </p>
 
 <h1 align="center">🛡️ Watchdog Panda</h1>
-<h3 align="center">The Vigilant Sentinel of the Panda Federation</h3>
+<h3 align="center">A local process watchdog</h3>
 
 <p align="center">
   <img src="https://img.shields.io/github/stars/pandadad0214/watchdog_panda?style=flat&color=7b2ff7" />
@@ -12,112 +12,116 @@
   <img src="https://img.shields.io/github/last-commit/pandadad0214/watchdog_panda?style=flat&color=6a00ff" />
 </p>
 
-<p align="center"><b>A tiny watchdog script: if a process stops, Watchdog Panda restarts it and logs what happened. Linux, macOS and Termux.</b></p>
+<p align="center"><b>If a process disappears, Watchdog Panda restarts it, waits longer each time it fails, and can run a shell command when that happens. Linux, macOS, and Termux. Bash only.</b></p>
 
 <p align="center">
   <a href="https://github.com/pandadad0214/Watchdog_Panda/releases/latest"><img src="https://img.shields.io/github/v/release/pandadad0214/Watchdog_Panda?label=latest%20release" /></a>
   <a href="https://github.com/pandadad0214/Watchdog_Panda/actions/workflows/ci.yml"><img src="https://github.com/pandadad0214/Watchdog_Panda/actions/workflows/ci.yml/badge.svg" /></a>
 </p>
 
-<p align="center"><b><a href="https://github.com/pandadad0214/Watchdog_Panda/releases/latest">⬇ Download the latest Release</a></b></p>
-
 ---
 
 # 🚀 Install / Use
 
-One command (installs into `~/watchdog-panda`):
+One process, from a clone of this repo (version 0.2.0):
+
+```bash
+git clone https://github.com/pandadad0214/Watchdog_Panda.git
+cd Watchdog_Panda
+TARGET_PROCESS="my-app" START_COMMAND="nohup ./my-app.sh &" bash Watchdog.sh
+```
+
+The curl installer downloads the **latest tagged Release**. Clone the repo to run 0.2.0 before a `v0.2.0` tag exists. After that tag is pushed, this also works:
 
 ```bash
 curl -fsSL https://github.com/pandadad0214/Watchdog_Panda/releases/latest/download/install.sh | bash
-```
-
-Then tell it what to watch and how to restart it:
-
-```bash
 cd ~/watchdog-panda
 TARGET_PROCESS="my-app" START_COMMAND="nohup ./my-app.sh &" bash Watchdog.sh
 ```
 
+Stop it with Ctrl+C. Events go to `watchdog.log`.
+
 | Setting | Default | Meaning |
 |---|---|---|
-| `TARGET_PROCESS` | `spirit-panda` | Text to match in the running process list (`pgrep -f`) |
-| `START_COMMAND` | `./start.sh` | Command that restarts it (end with `&` so the watchdog keeps watching) |
+| `TARGET_PROCESS` | `spirit-panda` | Pattern passed to `pgrep -f` |
+| `START_COMMAND` | `./start.sh` | Shell command that restarts it. It must return; end with `&` so Watchdog keeps looping |
 | `CHECK_INTERVAL` | `5` | Seconds between checks |
 | `LOG_FILE` | `watchdog.log` | Where events are written |
+| `MAX_RESTARTS` | `5` | Give up after this many restart attempts |
+| `BACKOFF_INITIAL` | `2` | Seconds to wait after the first restart. The wait doubles each attempt |
+| `BACKOFF_MAX` | `60` | Cap on that wait |
+| `COOLDOWN` | `0` | After giving up, try again after this many seconds. `0` stays quiet until the process is seen running |
+| `ON_FAILURE` | empty | Extra shell command after each restart attempt, and once when giving up |
 
-Stop it with Ctrl+C. Prefer a manual download? Grab `watchdog-panda.tar.gz` from the [latest Release](https://github.com/pandadad0214/Watchdog_Panda/releases/latest) and check it against `SHA256SUMS.txt`.
+These variables are the whole configuration when no config file is present. That is the same single-process mode as 0.1.0, plus the restart cap, backoff, and hook.
 
----
-
-# 🧭 Overview
-
-**Watchdog Panda** is the uptime guardian of the Panda Federation — a lightweight, local‑first monitoring agent that keeps your system, services, and AI agents alive, responsive, and stable.
-
-It watches.  
-It reports.  
-It protects.
-
-Watchdog Panda ensures that Spirit Panda, Steel Panda, and future Federation agents always know the state of the system.
+Prefer a manual download of a tagged Release? Grab `watchdog-panda.tar.gz` from the [latest Release](https://github.com/pandadad0214/Watchdog_Panda/releases/latest) and check it against `SHA256SUMS.txt`.
 
 ---
 
-# 🧩 Role in the Panda Federation
+# Several services
 
-```
-Spirit Panda  ← receives status + insights
-     ▲
-     │
-Watchdog Panda  ← monitors uptime, processes, agents
-     │
-     ▼
-Steel Panda  ← executes tasks + corrective actions
+Copy [`config/watchdog.example.yaml`](config/watchdog.example.yaml) and edit it. Watchdog loads the first file it finds:
+
+1. `$WATCHDOG_CONFIG`
+2. `./config/watchdog.yaml`
+3. `./watchdog.yaml`
+
+```bash
+cp config/watchdog.example.yaml config/watchdog.yaml
+bash Watchdog.sh
 ```
 
-Watchdog Panda is the **first line of defense**, ensuring:
+```yaml
+check_interval: 5
+log_file: watchdog.log
+max_restarts: 5
+backoff_initial: 2
+backoff_max: 60
+cooldown: 0
 
-- Spirit Panda always has accurate system awareness  
-- Steel Panda only acts when necessary  
-- The Federation remains stable, predictable, and sovereign  
+services:
+  - name: spirit-panda
+    process: spirit-panda
+    start: 'nohup ./start.sh &'
+  - name: my-app
+    process: my-app
+    start: 'nohup ./my-app.sh &'
+```
+
+`bash Watchdog.sh --show-config` prints the resolved settings and exits. The full schema, matching rules, and log lines are in [`Index.md`](Index.md).
 
 ---
 
-# ⚙️ Features
+# Safer restarts
 
-- Local‑first monitoring loop  
-- Configurable heartbeat intervals  
-- Process/service uptime checks  
-- Failure detection and escalation  
-- Optional logging and event timeline  
-- Integration hooks for Spirit Panda  
-- Trigger hooks for Steel Panda  
-- Lightweight, modular architecture  
+The first restart is immediate. After each attempt Watchdog waits before trying again. The wait starts at `backoff_initial` seconds and doubles until `backoff_max`. Checks still happen on `check_interval`, so the real gap is whichever is longer.
+
+When a service has been restarted `max_restarts` times and is still down, Watchdog logs `Giving up` and stops restarting it. If the process shows up later (you started it, or a hook did), the counters reset. With `cooldown` set above `0`, Watchdog also tries again after that quiet period.
+
+The log says `Backing off` when it waits and `Giving up` when it stops. A crashing process cannot be restarted in a tight loop.
 
 ---
 
-# 🔄 How It Works
+# Failure hook
 
-### **1. Heartbeat Loop**  
-A timed loop checks:
+`on_failure` (or `ON_FAILURE` for one process) is a shell command. Watchdog runs it after every restart attempt and once when it gives up. The command must return. A failing hook is logged; Watchdog keeps going.
 
-- processes  
-- services  
-- agents  
-- system metrics (optional)  
+This is how Watchdog runs [Steel Panda](https://github.com/pandadad0214/Steel_Panda). Steel does not have to be installed.
 
-### **2. Failure Detection**  
-If something stops responding, Watchdog Panda:
+```yaml
+on_failure: 'TASK_DIR=/path/to/recovery-tasks bash /path/to/steel-panda/steel.sh'
+```
 
-- logs the event  
-- notifies Spirit Panda  
-- optionally triggers Steel Panda  
+The hook sees `WATCHDOG_SERVICE_NAME`, `WATCHDOG_SERVICE_PROCESS`, `WATCHDOG_EVENT` (`restart` or `give_up`), `WATCHDOG_ATTEMPT`, `WATCHDOG_MAX_RESTARTS`, and `WATCHDOG_LOG_FILE`. A service can set its own `on_failure`, which replaces the global one. An empty `on_failure: ''` turns the hook off for that service.
 
-### **3. Recovery Actions**  
-Steel Panda may:
+---
 
-- restart a service  
-- run a script  
-- perform cleanup  
-- escalate to the user  
+# What it is
+
+Watchdog Panda is one bash loop. It asks `pgrep -f` whether each configured process is running. If not, it runs that service's start command and the optional hook.
+
+It does not phone home, open a port, or require Python or Node. The default process name `spirit-panda` is only a default pattern. Nothing in this repo talks to Spirit Panda unless you put that in a command you configure.
 
 ---
 
@@ -125,37 +129,39 @@ Steel Panda may:
 
 ```
 Watchdog_Panda/
-├── Watchdog.sh        # the watchdog loop
-├── install.sh         # one-command installer used by the Release
-├── Assets/            # logo
-├── Index.md           # documentation
-├── Documents/
-├── CHANGELOG / LICENSE / CONTRIBUTING / CODE_OF_CONDUCT
+├── Watchdog.sh                 # the loop
+├── install.sh                  # installer used by a tagged Release
+├── config/watchdog.example.yaml
+├── tests/smoke.sh              # shellcheck-friendly smoke tests
+├── Index.md                    # full configuration manual
+├── Documents/Index.md
+├── Assets/                     # logo
+├── Changelog.md
+└── LICENSE                     # MIT
 ```
 
-Run from a clone: `git clone https://github.com/pandadad0214/Watchdog_Panda.git && cd Watchdog_Panda && bash Watchdog.sh`
+```bash
+shellcheck -S error -s bash Watchdog.sh install.sh tests/smoke.sh
+bash tests/smoke.sh
+```
 
-Releases are automatic: add a line to `Changelog.md`, then push a `vX.Y.Z` tag. `.github/workflows/release.yml` packages `watchdog-panda.tar.gz`, `install.sh` and `SHA256SUMS.txt` and publishes the GitHub Release.
+Releases are automatic once a `vX.Y.Z` tag is pushed. `.github/workflows/release.yml` packages `watchdog-panda.tar.gz`, `install.sh`, and `SHA256SUMS.txt`. This changelog entry for 0.2.0 does not create that tag.
 
 ---
 
-# 🗺️ Roadmap
+# 🗺️ Still planned
 
-### **Planned Features**
-- A `config/watchdog.yaml` file for watching several services at once  
-- Multi‑agent heartbeat mesh  
-- Federation‑wide status dashboard  
-- Local‑first event timeline  
-- Configurable escalation levels  
-- Optional encrypted logs  
-- Integration with PandaMom and PandaLily  
-- Auto‑recovery routines  
+- Telegram or other messaging notifications
+- HTTP health check endpoints
+- Spirit Panda integration examples
+- A status dashboard
+- Optional encrypted logs
 
 ---
 
 # 📚 Documentation
 
-Full documentation: [`Index.md`](Index.md)
+[`Index.md`](Index.md) · [`Documents/Index.md`](Documents/Index.md) · [`Changelog.md`](Changelog.md)
 
 ---
 
@@ -165,11 +171,8 @@ Full documentation: [`Index.md`](Index.md)
 Build steady.  
 Build sovereign.**
 
-Watchdog Panda stands guard so the Federation may thrive.
-
 ---
 
 # 📜 License
 
-This project is licensed under the **MIT License**.  
-See the `LICENSE` file for details.
+MIT. See [`LICENSE`](LICENSE).

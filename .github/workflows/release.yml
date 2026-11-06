@@ -19,11 +19,15 @@ jobs:
         with:
           persist-credentials: false
       - name: Shellcheck
-        run: shellcheck -S error -s bash Watchdog.sh install.sh
+        run: shellcheck -S error -s bash Watchdog.sh install.sh tests/smoke.sh
+      - name: Smoke tests
+        run: bash tests/smoke.sh
       - name: Package
         run: |
           mkdir -p dist
-          tar czf dist/watchdog-panda.tar.gz Watchdog.sh README.md Index.md LICENSE Changelog.md
+          tar czf dist/watchdog-panda.tar.gz \
+            Watchdog.sh README.md Index.md Documents/Index.md LICENSE Changelog.md \
+            config/watchdog.example.yaml
           cp install.sh dist/
           cd dist && sha256sum * > SHA256SUMS.txt && cat SHA256SUMS.txt
       - name: Create GitHub Release
