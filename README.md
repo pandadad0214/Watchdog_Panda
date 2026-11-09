@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/github/last-commit/pandadad0214/watchdog_panda?style=flat&color=6a00ff" />
 </p>
 
-<p align="center"><b>If a process disappears, Watchdog Panda restarts it, waits longer each time it fails, and can run a shell command when that happens. Linux, macOS, and Termux. Bash only.</b></p>
+<p align="center"><b>Watchdog Panda restarts a local process when it disappears, waits longer after each failure and can run a shell command when that happens. One Bash script for Linux, macOS and Termux, with no daemon or network.</b></p>
 
 <p align="center">
   <a href="https://github.com/pandadad0214/Watchdog_Panda/releases/latest"><img src="https://img.shields.io/github/v/release/pandadad0214/Watchdog_Panda?label=latest%20release" /></a>
@@ -21,9 +21,33 @@
 
 ---
 
-# 🚀 Install / Use
+## How to use this
 
-One process, from a clone of this repo (version 0.2.0):
+```bash
+curl -fsSL https://github.com/pandadad0214/Watchdog_Panda/releases/latest/download/install.sh | bash
+cd ~/watchdog-panda
+TARGET_PROCESS="my-app" START_COMMAND="nohup ./my-app.sh &" bash Watchdog.sh
+```
+
+1. **Install** the latest Release with the first line (into `~/watchdog-panda`).
+2. **Say what to watch:** `TARGET_PROCESS` is a `pgrep -f` pattern; `START_COMMAND` restarts it and must end with `&`.
+3. **Run** `bash Watchdog.sh` and read `watchdog.log`. For several services, copy `config/watchdog.example.yaml` (see [Several services](#several-services)).
+
+## For AI agents
+
+| Field | Value |
+| --- | --- |
+| Purpose | Restart a local process when it disappears, with exponential backoff, a restart cap and an optional failure hook. |
+| Use when | A long-running local process (bot, server, script) must be kept alive on Linux, macOS or Termux without systemd or a supervisor. |
+| Do not use when | You already have systemd, launchd, Docker restart policies or a process manager; or you need remote/cluster monitoring. |
+| Install | `curl -fsSL https://github.com/pandadad0214/Watchdog_Panda/releases/latest/download/install.sh \| bash` |
+| Entry point | `bash Watchdog.sh` with env `TARGET_PROCESS`, `START_COMMAND`, `CHECK_INTERVAL`, `MAX_RESTARTS`, `BACKOFF_INITIAL`, `BACKOFF_MAX`, `COOLDOWN`, `ON_FAILURE`, or a YAML config |
+| Outputs | Event lines in `watchdog.log` |
+| Side effects | Runs your `START_COMMAND` and `ON_FAILURE` shell commands; no network. Stop with Ctrl+C. |
+
+## Install options
+
+From a clone of this repo (current main):
 
 ```bash
 git clone https://github.com/pandadad0214/Watchdog_Panda.git
@@ -31,7 +55,7 @@ cd Watchdog_Panda
 TARGET_PROCESS="my-app" START_COMMAND="nohup ./my-app.sh &" bash Watchdog.sh
 ```
 
-The curl installer downloads the **latest tagged Release**. Clone the repo to run 0.2.0 before a `v0.2.0` tag exists. After that tag is pushed, this also works:
+The curl installer downloads the **latest tagged Release** (v0.2.0):
 
 ```bash
 curl -fsSL https://github.com/pandadad0214/Watchdog_Panda/releases/latest/download/install.sh | bash
@@ -59,7 +83,7 @@ Prefer a manual download of a tagged Release? Grab `watchdog-panda.tar.gz` from 
 
 ---
 
-# Several services
+## Several services
 
 Copy [`config/watchdog.example.yaml`](config/watchdog.example.yaml) and edit it. Watchdog loads the first file it finds:
 
@@ -93,7 +117,7 @@ services:
 
 ---
 
-# Safer restarts
+## Safer restarts
 
 The first restart is immediate. After each attempt Watchdog waits before trying again. The wait starts at `backoff_initial` seconds and doubles until `backoff_max`. Checks still happen on `check_interval`, so the real gap is whichever is longer.
 
@@ -103,7 +127,7 @@ The log says `Backing off` when it waits and `Giving up` when it stops. A crashi
 
 ---
 
-# Failure hook
+## Failure hook
 
 `on_failure` (or `ON_FAILURE` for one process) is a shell command. Watchdog runs it after every restart attempt and once when it gives up. The command must return. A failing hook is logged; Watchdog keeps going.
 
@@ -117,7 +141,7 @@ The hook sees `WATCHDOG_SERVICE_NAME`, `WATCHDOG_SERVICE_PROCESS`, `WATCHDOG_EVE
 
 ---
 
-# What it is
+## What it is
 
 Watchdog Panda is one bash loop. It asks `pgrep -f` whether each configured process is running. If not, it runs that service's start command and the optional hook.
 
@@ -125,7 +149,7 @@ It does not phone home, open a port, or require Python or Node. The default proc
 
 ---
 
-# 🛠 For developers
+## For developers
 
 ```
 Watchdog_Panda/
@@ -149,7 +173,7 @@ Releases are automatic once a `vX.Y.Z` tag is pushed. `.github/workflows/release
 
 ---
 
-# 🗺️ Still planned
+## Still planned
 
 - Telegram or other messaging notifications
 - HTTP health check endpoints
@@ -159,13 +183,13 @@ Releases are automatic once a `vX.Y.Z` tag is pushed. `.github/workflows/release
 
 ---
 
-# 📚 Documentation
+## Documentation
 
 [`Index.md`](Index.md) · [`Documents/Index.md`](Documents/Index.md) · [`Changelog.md`](Changelog.md)
 
 ---
 
-# 🪶 Panda Oath
+## Panda Oath
 
 **Build slow.  
 Build steady.  
@@ -173,6 +197,6 @@ Build sovereign.**
 
 ---
 
-# 📜 License
+## License
 
 MIT. See [`LICENSE`](LICENSE).
