@@ -21,11 +21,11 @@
 
 ---
 
-## Part of [Panda Federation](https://pandafederation.github.io/)
+## Part of [Panda Federation](https://pandafederation.com/)
 
-[![Part of Panda Federation](https://pandafederation.github.io/assets/badge.svg)](https://pandafederation.github.io/)
+[![Part of Panda Federation](https://pandafederation.com/assets/badge.svg)](https://pandafederation.com/)
 
-This project is a module of the Panda Federation — public-data tools, MCP servers, and local-first apps in one catalog. See the rest of the work, including books when they publish and the matching free or paid editions of this tool, at the [official site](https://pandafederation.github.io/).
+This project is a module of the Panda Federation — public-data tools, MCP servers, and local-first apps in one catalog. See the rest of the work, including books when they publish and the matching free or paid editions of this tool, at the [official site](https://pandafederation.com/).
 
 ## How to use this
 
